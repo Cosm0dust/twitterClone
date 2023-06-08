@@ -21,7 +21,7 @@ export default async function handler(
             return
         }
         if(req.method == "GET"){
-            const post = await prisma.post.findMany({
+            const posts = await prisma.post.findMany({
                 orderBy:{
                     createdAt: "desc"
                 }
