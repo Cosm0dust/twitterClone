@@ -26,7 +26,6 @@ export default function Bookmarks() {
     }
 
     useEffect(() => {
-        // fetch the tweet details and replies
         async function f() {
             if (session && status == "authenticated") {
                 setLoading(true)

@@ -9,7 +9,7 @@ export default async function handler(
 ) {
     const session = await getServerSession(req as any, res as any, authOptions as any)
     if (!session) {
-        res.status(401).json({ msg: "You must be logged in." })
+         res.status(401).json({ msg: "You must be logged in." })
     }
     if (req.method == "POST") {
         const post = await prisma.post.update({
@@ -21,6 +21,7 @@ export default async function handler(
             }
         })
         res.status(200).json({ msg: "done", post })
+        return;
     }
     res.status(201).json({ msg: "incorrect request" })
 }

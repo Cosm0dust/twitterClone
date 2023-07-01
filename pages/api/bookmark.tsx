@@ -42,6 +42,7 @@ export default async function handler(
             }
         })
         res.status(200).json({ msg: "done", post })
+        return;
     }
     res.status(201).json({ msg: "incorrect request" })
 }

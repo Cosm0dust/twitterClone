@@ -11,7 +11,6 @@ const TwitterSVG = () => (
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const router = useRouter()
-    // router.pathname == "/login"
     if (router.pathname == "/login") {
         return <div>{children}</div>
     }

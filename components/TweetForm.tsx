@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useDropzone } from "react-dropzone"
 
 
-export default function TweetForm({ onSubmit, txt, setTxt, base64, setBase64, profileImage, label }: {
+export default function TweetForm({ onSubmit, txt, setTxt, base64, setBase64, profileImage, label,  }: {
     onSubmit: () => void,
     txt: string,
     setTxt: (value: string) => void,
@@ -17,7 +17,6 @@ export default function TweetForm({ onSubmit, txt, setTxt, base64, setBase64, pr
 
     async function submit() {
         setSending(true)
-        // hit the create post api
         await onSubmit()
         setBase64('')
         setSending(false)
@@ -27,7 +26,7 @@ export default function TweetForm({ onSubmit, txt, setTxt, base64, setBase64, pr
         const file = files[0]
         const reader = new FileReader()
         reader.onload = (event: any) => {
-            setBase64(event.target.result) // base64 string
+            setBase64(event.target.result)
         }
         reader.readAsDataURL(file)
     }

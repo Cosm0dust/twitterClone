@@ -8,7 +8,6 @@ import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 
 export default function Profile() {
-
     const router = useRouter()
 
     const { data: session, status } = useSession({ required: true })
@@ -142,7 +141,6 @@ export default function Profile() {
                             <p className="text-neutral-400">@{username}</p>
                         </div>
                     </div>
-                    {/* user tweets */}
                     {userTweets.map((post: Post, index: number) => (
                         <TweetBox
                             key={post.id}

@@ -13,9 +13,9 @@ export default function TweetDetails() {
     const [post, setPost] = useState<Post>()
     const [userData, setUserData] = useState<User>()
     const [profileImage, setProfileImage] = useState<string>("/blank_pp.webp")
-    const [base64, setBase64] = useState<string>("") // image that gets uploaded in new tweet
-    const [txt, setTxt] = useState<string>("") // body of the new tweet
-    const [key, setKey] = useState<number>(0) // key of the tweet form component
+    const [base64, setBase64] = useState<string>("")
+    const [txt, setTxt] = useState<string>("")
+    const [key, setKey] = useState<number>(0)
     const [replies, setReplies] = useState<Array<Post>>([])
     const [replyUserData, setReplyUserData] = useState<Array<User>>([])
     const [loading, setLoading] = useState<boolean>(true)
@@ -35,12 +35,10 @@ export default function TweetDetails() {
             })
         })
         if (response.status == 200) {
-            // fetch the tweets
             await getReplies()
             await getTweetDetails()
             setBase64("")
             setKey(key + 1)
-
         }
     }
 
@@ -70,7 +68,7 @@ export default function TweetDetails() {
         }
     }
 
-    // tid -> get data from database using an api
+
     async function getTweetDetails() {
         const response = await fetch(`/api/tweet/${tid}`)
         if (response.status == 200) {
@@ -83,7 +81,6 @@ export default function TweetDetails() {
     }
 
     useEffect(() => {
-        // fetch the tweet details and replies
         async function f() {
             if (session && status == "authenticated" && tid) {
                 setLoading(true)
@@ -114,8 +111,8 @@ export default function TweetDetails() {
                         userData={userData}
                         onClick={() => { }}
                         userEmail={session.user?.email as string}
+                        repliesCount={replyUserData.length}
                     /> : null}
-                    {/* tweet form for replies */}
                     <TweetForm
                         onSubmit={reply}
                         key={key}
@@ -126,7 +123,6 @@ export default function TweetDetails() {
                         profileImage={profileImage}
                         label="Reply"
                     />
-                    {/* replies */}
                     {replies.map((post: Post, index: number) => (
                         <TweetBox
                             key={post.id}
@@ -134,6 +130,7 @@ export default function TweetDetails() {
                             userData={replyUserData[index]}
                             onClick={() => { }}
                             userEmail={session.user?.email as string}
+
                         />
                     ))}
                 </div>

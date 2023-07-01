@@ -29,4 +29,5 @@ model Post {
     bookmarkedUserEmails String[]
     parentId String?
     commentIds String[]
+
 }

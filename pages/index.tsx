@@ -36,12 +36,13 @@ export default function Home() {
             })
         })
         if (response.status == 200) {
-            // fetch the tweets
             await getTweets()
-            setBase64("") // reset the uploaded image
-            setKey(key + 1) // reset the contenteditable div
+            setBase64("")
+            setKey(key + 1)
         }
     }
+
+
 
     async function getTweets() {
         const response = await fetch("/api/post")
@@ -143,10 +144,9 @@ export default function Home() {
                             setBase64={setBase64}
                             label="Submit"
                         />
-                        {/* list of tweets */}
                         {loading ? <div className='flex justify-center p-8'>
                             loading...
-                        </div> : tweets.map((post: Post, i: number) => (
+                        </div> : tweets.filter(post=> post.parentId === null).map((post: Post, i: number) => (
                             <TweetBox
                                 onClick={() => router.push(`/tweet/${post.id}`)}
                                 key={post.id}

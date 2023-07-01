@@ -2,9 +2,10 @@ import { ArrowPathRoundedSquareIcon, BookmarkIcon, ChatBubbleLeftEllipsisIcon, H
 import { HeartIcon as HeartIconSolid, BookmarkIcon as BookmarkIconSolid } from "@heroicons/react/24/solid";
 import { Post, User } from "@prisma/client";
 import Image from "next/image";
-import { useState } from "react";
+import {useEffect, useState} from "react";
+import {ActiveButton} from "@/components/ActiveButton";
 
-export default function TweetBox({ onClick, userData, post, userEmail }: {
+export default function TweetBox({ onClick, userData, post, userEmail, repliesCount}: {
     onClick: () => void,
     userData: User,
     post: Post,
@@ -12,51 +13,51 @@ export default function TweetBox({ onClick, userData, post, userEmail }: {
 }) {
     const [likedEmails, setLikedEmails] = useState<Array<string>>(post.likedUserEmails)
     const [bookmarkedEmails, setBookmarkedEmails] = useState<Array<string>>(post.bookmarkedUserEmails)
+    const [isLiked, setIsLiked]= useState(false)
+    const [isBookmarked, setIsBookmarked]= useState(false)
+    const [replies, setReplies] = useState<Array<Post>>([])
+    const [replyUserData, setReplyUserData] = useState<Array<User>>([])
 
-    function isLiked() {
-        return likedEmails.includes(userEmail)
-    }
 
-    function isBookmarked() {
-        return bookmarkedEmails.includes(userEmail)
-    }
 
-    async function like() {
-        let newLikedUserEmails = []
-        if (post.likedUserEmails.includes(userEmail)) {
-            newLikedUserEmails = post.likedUserEmails.filter(email => email != userEmail)
-            console.log(newLikedUserEmails)
-        } else {
-            newLikedUserEmails = [...post.likedUserEmails, userEmail]
-            console.log(newLikedUserEmails)
+
+    useEffect(()=>{
+        if(bookmarkedEmails.includes(userEmail)){
+            setIsBookmarked(true)
+        } else{
+            setIsBookmarked(false)
         }
-        setLikedEmails(newLikedUserEmails)
-        const response = await fetch("/api/like", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                id: post.id,
-                likedUserEmails: newLikedUserEmails
-            })
+    }, [bookmarkedEmails])
+
+    async function getReplies() {
+        const params = new URLSearchParams({
+            tid: post.id as string
         })
+        const response = await fetch("/api/comment?" + params)
         if (response.status == 200) {
             const data = await response.json()
-            setLikedEmails(data.post.likedUserEmails)
+            setReplies(data.posts)
+            setReplyUserData(data.userData)
         }
     }
+
 
     async function bookmark() {
         let newBookmarkedUserEmails = []
-        if (post.bookmarkedUserEmails.includes(userEmail)) {
-            newBookmarkedUserEmails = post.bookmarkedUserEmails.filter(email => email != userEmail)
-            console.log(newBookmarkedUserEmails)
-        } else {
-            newBookmarkedUserEmails = [...post.bookmarkedUserEmails, userEmail]
-            console.log(newBookmarkedUserEmails)
+        if(isBookmarked)  {
+            post.bookmarkedUserEmails.filter(email => email != userEmail)
+            setBookmarkedEmails(newBookmarkedUserEmails)
+        } else{
+            if (post.bookmarkedUserEmails.includes(userEmail)){
+                newBookmarkedUserEmails = post.bookmarkedUserEmails.filter(email => email != userEmail)
+                newBookmarkedUserEmails.push(userEmail)
+            } else {
+                newBookmarkedUserEmails = [...post.bookmarkedUserEmails, userEmail]
+
+            }
+            setBookmarkedEmails(newBookmarkedUserEmails)
+
         }
-        setBookmarkedEmails(newBookmarkedUserEmails)
         const response = await fetch("/api/bookmark", {
             method: "POST",
             headers: {
@@ -67,11 +68,22 @@ export default function TweetBox({ onClick, userData, post, userEmail }: {
                 bookmarkedUserEmails: newBookmarkedUserEmails
             })
         })
+
         if (response.status == 200) {
             const data = await response.json()
             setBookmarkedEmails(data.post.bookmarkedUserEmails)
         }
     }
+
+
+    useEffect(() => {
+        async function f() {
+            await getReplies()
+        }
+        f()
+    }, [post.id])
+
+
 
     return <div onClick={onClick} className="p-4 border-b border-neutral-600 flex">
         <div className="w-16 shrink-0 grow-0 mr-2 flex flex-col items-center">
@@ -94,10 +106,10 @@ export default function TweetBox({ onClick, userData, post, userEmail }: {
                 alt="tweet image"
             /> : null}
             <div className="flex gap-12 pt-4">
-                <button className="flex items-center gap-2 hover:text-blue-500"><ChatBubbleLeftEllipsisIcon className="h-5 w-5" />{post?.commentIds.length}</button>
-                <button className="flex items-center gap-2 hover:text-blue-500"><ArrowPathRoundedSquareIcon className="h-5 w-5" />{0}</button>
-                <button onClick={(e) => { e.stopPropagation(); like() }} className="flex items-center gap-2 hover:text-blue-500">{isLiked() ? <HeartIconSolid className="h-5 w-5" /> : <HeartIcon className="h-5 w-5" />}{likedEmails.length}</button>
-                <button onClick={(e) => { e.stopPropagation(); bookmark() }} className="flex items-center gap-2 hover:text-blue-500">{isBookmarked() ? <BookmarkIconSolid className="h-5 w-5" /> : <BookmarkIcon className="h-5 w-5" />}{bookmarkedEmails.length}</button>
+                {post.parentId === null && <button className="flex items-center gap-2 hover:text-blue-500"><ChatBubbleLeftEllipsisIcon
+                    className="h-5 w-5"/>{replyUserData.length}</button>}
+                <ActiveButton active={isLiked} setActive={setIsLiked} id={post.id} value={post.likedUserEmails} userEmail={userEmail} arr={likedEmails} setArr={setLikedEmails} Icon={HeartIconSolid} DisIcon={HeartIcon} />
+                <button onClick={(e) => { e.stopPropagation();bookmark() }} className="flex items-center gap-2 hover:text-blue-500">{isBookmarked ? <BookmarkIconSolid className="h-5 w-5" /> : <BookmarkIcon className="h-5 w-5" />}{bookmarkedEmails.length}</button>
             </div>
         </div>
     </div>
