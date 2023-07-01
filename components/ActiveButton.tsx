@@ -29,10 +29,10 @@ export function ActiveButton({value, id, active, setActive, userEmail, arr, setA
 
 
     async function like() {
-        let newLikedUserEmails = []
+        let newLikedUserEmails : string[] = []
         if (value.includes(userEmail)) {
             newLikedUserEmails = value.filter(email => email != userEmail)
-             newLikedUserEmails
+
         } else{
             newLikedUserEmails = [...value, userEmail]
         }
