@@ -5,7 +5,7 @@ import Image from "next/image";
 import {useEffect, useState} from "react";
 import {ActiveButton} from "@/components/ActiveButton";
 
-export default function TweetBox({ onClick, userData, post, userEmail, repliesCount}: {
+export default function TweetBox({ onClick, userData, post, userEmail}: {
     onClick: () => void,
     userData: User,
     post: Post,
@@ -15,7 +15,6 @@ export default function TweetBox({ onClick, userData, post, userEmail, repliesCo
     const [bookmarkedEmails, setBookmarkedEmails] = useState<Array<string>>(post.bookmarkedUserEmails)
     const [isLiked, setIsLiked]= useState(false)
     const [isBookmarked, setIsBookmarked]= useState(false)
-    const [replies, setReplies] = useState<Array<Post>>([])
     const [replyUserData, setReplyUserData] = useState<Array<User>>([])
 
 
@@ -36,14 +35,13 @@ export default function TweetBox({ onClick, userData, post, userEmail, repliesCo
         const response = await fetch("/api/comment?" + params)
         if (response.status == 200) {
             const data = await response.json()
-            setReplies(data.posts)
             setReplyUserData(data.userData)
         }
     }
 
 
     async function bookmark() {
-        let newBookmarkedUserEmails = []
+        let newBookmarkedUserEmails: string[] = []
         if(isBookmarked)  {
             post.bookmarkedUserEmails.filter(email => email != userEmail)
             setBookmarkedEmails(newBookmarkedUserEmails)

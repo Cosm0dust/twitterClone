@@ -12,12 +12,9 @@ interface ActiveButtonProps{
     setArr: (prev: string[])=> void;
     Icon: React.ForwardRefExoticComponent<React.PropsWithoutRef<React.SVGProps<SVGSVGElement>> & {title?: string, titleId?: string} & React.RefAttributes<SVGSVGElement>>;
     DisIcon: React.ForwardRefExoticComponent<React.PropsWithoutRef<React.SVGProps<SVGSVGElement>> & {title?: string, titleId?: string} & React.RefAttributes<SVGSVGElement>>;
-    styles: string;
-    route: string;
-    objectValue: string;
 }
 
-export function ActiveButton({value, id, active, setActive, userEmail, arr, setArr, Icon, DisIcon, objectValue, route }: ActiveButtonProps){
+export function ActiveButton({value, id, active, setActive, userEmail, arr, setArr, Icon, DisIcon }: ActiveButtonProps){
 
     useEffect(()=>{
         if(arr.includes(userEmail)){
@@ -57,7 +54,7 @@ export function ActiveButton({value, id, active, setActive, userEmail, arr, setA
     }
 
     async function dislike(){
-        let newLikedUserEmails = []
+        let newLikedUserEmails: string[] = []
         value.filter(email => email != userEmail)
         setArr(newLikedUserEmails)
         const response = await fetch("/api/like", {

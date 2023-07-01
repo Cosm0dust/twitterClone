@@ -111,7 +111,6 @@ export default function TweetDetails() {
                         userData={userData}
                         onClick={() => { }}
                         userEmail={session.user?.email as string}
-                        repliesCount={replyUserData.length}
                     /> : null}
                     <TweetForm
                         onSubmit={reply}
@@ -130,7 +129,6 @@ export default function TweetDetails() {
                             userData={replyUserData[index]}
                             onClick={() => { }}
                             userEmail={session.user?.email as string}
-
                         />
                     ))}
                 </div>
